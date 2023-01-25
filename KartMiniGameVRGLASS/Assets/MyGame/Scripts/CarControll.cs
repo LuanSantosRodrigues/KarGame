@@ -1,72 +1,112 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class CarControll : MonoBehaviour
 {
-    [SerializeField] private WheelCollider front_driveCol;
-    [SerializeField] private WheelCollider front_passCol;
-    [SerializeField] private WheelCollider back_driveCol;
-    [SerializeField] private WheelCollider back_passCol;
-
-    [SerializeField] private Transform frontDRiver, frontPass;
-    [SerializeField] private Transform backDRiver, backPass;
-
-    public float steerAngle = 25.0f;
-    public float motorForce = 1500f;
-    public float steerAlgleResult;
-
-    private float horizontal;
-    private float vertical;
-
-    private void FixedUpdate()
+    public enum Axel
     {
-        Inputs();
-        DriveCar();
+        Front,
+        Rear
+    }
+    [Serializable]
+    public struct Wheel 
+    {
+        public GameObject wheelModel;
+        public WheelCollider wheelCollider;
+        public Axel axel;
+    }
+
+    [SerializeField] private float maxAcceleration = 30.0f;
+    [SerializeField] private float brakeAcceleration = 50.0f;
+
+    [SerializeField] private float turnSensitivy = 1.0f;
+    [SerializeField] private float maxSteerAngle = 30.0f;
+
+    [SerializeField] private Vector3 centerOfMass;
+
+
+    public List<Wheel> wheels;
+
+    float moveInputs;
+    float steerInputs;
+
+    private Rigidbody carRb;
+
+    private void Start()
+    {
+        carRb = GetComponent<Rigidbody>();
+        carRb.centerOfMass = centerOfMass;
+    }
+    private void Update()
+    {
+        GetInputs();
+    }
+    private void LateUpdate()
+    {
+        MoveCar();
         SteerCar();
-        BreakCar();
-
-        updateWheelPos(front_driveCol, frontDRiver);
-        updateWheelPos(front_passCol, frontPass);
-        updateWheelPos(back_driveCol, backDRiver);
-        updateWheelPos(back_passCol, backPass);
+        AnimatedWheels();
+        BrakeCar();
     }
 
-    void Inputs() 
+
+    void GetInputs() 
     {
-        horizontal = Input.GetAxis("Horizontal");
-        vertical = Input.GetAxis("Vertical");
+        moveInputs = Input.GetAxis("Vertical");
+        steerInputs = Input.GetAxis("Horizontal");
     }
-    void DriveCar() 
+
+    void MoveCar() 
     {
-        back_driveCol.motorTorque = vertical * motorForce;
-        back_passCol.motorTorque = vertical * motorForce;
-    }
-    void SteerCar() 
-    {
-        steerAlgleResult = steerAngle * horizontal;
-        front_driveCol.steerAngle = steerAlgleResult;
-        front_passCol.steerAngle = steerAlgleResult;
-    }
-    void BreakCar() 
-    {
-        if (Input.GetKey(KeyCode.Space)) 
+        foreach (var wheel in wheels) 
         {
-            back_driveCol.motorTorque = vertical * motorForce * -1;
-            back_passCol.motorTorque = vertical * motorForce * -1;
+            wheel.wheelCollider.motorTorque = moveInputs * 600 * maxAcceleration * Time.deltaTime;
         }
     }
 
-    void updateWheelPos(WheelCollider wCol, Transform wTrans) 
+    void SteerCar() 
     {
-        Vector3 pos = wTrans.position;
-        Quaternion rot = wTrans.rotation;
-
-        wCol.GetWorldPose(out pos, out rot);
-        wTrans.position = pos;
-        wTrans.rotation = rot;
+        foreach (var wheel in wheels)
+        {
+            if (wheel.axel == Axel.Front) 
+            {
+                var steerAngleVar = steerInputs * turnSensitivy * maxSteerAngle;
+                wheel.wheelCollider.steerAngle = Mathf.Lerp(wheel.wheelCollider.steerAngle, steerAngleVar, 0.6f);
+            }
+        }
     }
 
+    void BrakeCar() 
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            foreach (var wheel in wheels)
+            {
+                wheel.wheelCollider.brakeTorque = 300 * brakeAcceleration * Time.deltaTime;
+            }
+        }
+        else
+        {
+            foreach (var wheel in wheels)
+            {
+                wheel.wheelCollider.brakeTorque = 0;
+            }
+        }
+    }
 
+    void AnimatedWheels() 
+    {
+        foreach (var wheel in wheels) 
+        {
+            Quaternion rot;
+            Vector3 pos;
 
+            wheel.wheelCollider.GetWorldPose(out pos, out rot);
+
+            wheel.wheelModel.transform.position = pos;
+            wheel.wheelModel.transform.rotation = rot;
+        }
+    }
 }
