@@ -10,7 +10,7 @@ public class Cam : MonoBehaviour
 
     [SerializeField] private Vector3 offSet;
 
-    private void FixedUpdate()
+    private void Update()
     {
         LookAt();
         FollowMe();

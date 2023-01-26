@@ -43,7 +43,7 @@ public class CarControll : MonoBehaviour
     {
         GetInputs();
     }
-    private void LateUpdate()
+    private void FixedUpdate()
     {
         MoveCar();
         SteerCar();
@@ -62,7 +62,11 @@ public class CarControll : MonoBehaviour
     {
         foreach (var wheel in wheels) 
         {
-            wheel.wheelCollider.motorTorque = moveInputs * 600 * maxAcceleration * Time.deltaTime;
+            if (wheel.axel == Axel.Rear)
+            {
+                wheel.wheelCollider.motorTorque = moveInputs * 600 * maxAcceleration * Time.deltaTime;
+            }
+            
         }
     }
 
