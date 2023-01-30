@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class CountLaps : MonoBehaviour
 {
-    public int countLaps = 0;
+    public int countLaps = 1;
     public LapsUI lapsUI;
     void Update()
     {
-        if (countLaps == 3) Debug.Log("Finished race");
+        if (countLaps == 4) Debug.Log("Finished race");
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        countLaps += 1;
-        lapsUI.ChangeLap(countLaps);
+        if (other.CompareTag("Player"))
+        {
+            countLaps += 1;
+            lapsUI.ChangeLap(countLaps);
+        }
     }
 
 }
