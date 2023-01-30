@@ -7,6 +7,7 @@ public class Timer : MonoBehaviour
 {
     public int startCount = 3;
     public TextMeshProUGUI timerText;
+    public CarControll carControll;
     void Start()
     {
         timerText.text = startCount.ToString();
@@ -31,6 +32,7 @@ public class Timer : MonoBehaviour
         else
         {
             timerText.gameObject.SetActive(false);
+            carControll.canMove = true;
         }
     }
 }

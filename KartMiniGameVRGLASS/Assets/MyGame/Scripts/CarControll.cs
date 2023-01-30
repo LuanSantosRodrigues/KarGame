@@ -34,6 +34,8 @@ public class CarControll : MonoBehaviour
 
     private Rigidbody carRb;
 
+    public bool canMove = false;
+
     private void Start()
     {
         carRb = GetComponent<Rigidbody>();
@@ -41,14 +43,20 @@ public class CarControll : MonoBehaviour
     }
     private void Update()
     {
-        GetInputs();
+        if (canMove)
+        {
+            GetInputs();
+        }
     }
     private void FixedUpdate()
     {
-        MoveCar();
-        SteerCar();
-        AnimatedWheels();
-        BrakeCar();
+        if (canMove)
+        {
+            MoveCar();
+            SteerCar();
+            AnimatedWheels();
+            BrakeCar();
+        }
     }
 
 
