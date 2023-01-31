@@ -64,7 +64,7 @@ public class CarControll : MonoBehaviour
         {
             if (wheel.axel == Axel.Rear)
             {
-                wheel.wheelCollider.motorTorque = moveInputs * 600 * maxAcceleration * Time.deltaTime;
+                wheel.wheelCollider.motorTorque = moveInputs * 1000 * maxAcceleration * Time.deltaTime;
             }
             
         }

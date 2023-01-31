@@ -14,6 +14,8 @@ public class Cam : MonoBehaviour
     {
         LookAt();
         FollowMe();
+
+        if (Input.GetMouseButton(0)) Debug.Log("Dir");
     }
     void LookAt() 
     {
