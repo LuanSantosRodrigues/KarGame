@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class CountLaps : MonoBehaviour
 {
@@ -16,12 +17,21 @@ public class CountLaps : MonoBehaviour
     [SerializeField] private TextMeshProUGUI cauntTimeLaps3;
     [SerializeField] private float[] timeSaveLap;
 
+    [SerializeField] private GameObject endGame;
 
 
+    private void Start()
+    {
+        endGame.SetActive(false);
+    }
     void FixedUpdate()
     {
-        if (countLaps == 4) Debug.Log("Finished race");
+        if (countLaps == 4) 
+        {
+            Time.timeScale = 0;
+            endGame.SetActive(true);
 
+        };
         if (carControll.canMove)
         {
             time += Time.deltaTime;
@@ -38,11 +48,7 @@ public class CountLaps : MonoBehaviour
             lapsUI.ChangeLap(countLaps);
             SaveTimeLaps();
             time = 0;
-            timeText.text = time.ToString();
-
-            
-            
-
+            timeText.text = time.ToString();       
         }
     }
 
@@ -53,7 +59,6 @@ public class CountLaps : MonoBehaviour
         if (countLaps == 3) cauntTimeLaps3.text = getTimeString(time);
 
     }
-
     string getTimeString(float time)
     {
         int timeInt = (int)(time);
@@ -62,6 +67,11 @@ public class CountLaps : MonoBehaviour
         float fraction = (time * 100) % 100;
         if (fraction > 99) fraction = 99;
         return string.Format("{0}:{1:00}:{2:00}", minutes, seconds, fraction);
+    }
+    public void RestartGame() 
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene("Gameplay");
     }
 
 }
