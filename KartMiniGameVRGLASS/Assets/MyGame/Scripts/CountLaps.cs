@@ -7,13 +7,21 @@ public class CountLaps : MonoBehaviour
 {
     public int countLaps = 1;
     public LapsUI lapsUI;
-    public TextMeshProUGUI timeText;
+    public TextMeshProUGUI timeText;    
     public CarControll carControll;
     float time = 0f;
-    
+
+    [SerializeField] private TextMeshProUGUI cauntTimeLaps1;
+    [SerializeField] private TextMeshProUGUI cauntTimeLaps2;
+    [SerializeField] private TextMeshProUGUI cauntTimeLaps3;
+    [SerializeField] private float[] timeSaveLap;
+
+
+
     void FixedUpdate()
     {
         if (countLaps == 4) Debug.Log("Finished race");
+
         if (carControll.canMove)
         {
             time += Time.deltaTime;
@@ -28,9 +36,22 @@ public class CountLaps : MonoBehaviour
             countLaps ++;
             Debug.Log(countLaps);
             lapsUI.ChangeLap(countLaps);
+            SaveTimeLaps();
             time = 0;
             timeText.text = time.ToString();
+
+            
+            
+
         }
+    }
+
+    public void SaveTimeLaps()
+    {
+        if (countLaps == 1) cauntTimeLaps1.text = getTimeString(time);
+        if (countLaps == 2) cauntTimeLaps2.text = getTimeString(time);
+        if (countLaps == 3) cauntTimeLaps3.text = getTimeString(time);
+
     }
 
     string getTimeString(float time)
